@@ -1,62 +1,94 @@
-# Intern Challenge: Placement Problem - Fork this repo when you start!
+# Intern Challenge Placement Submission
 
-Welcome to the par.tcl 2026 ML Sys intern challenge! Your task is to solve a placement problem involving standard cells (small blocks) and macros (large blocks). The **primary goal is to minimize overlap** between blocks. Wirelength is also evaluated, but **overlap is the dominant objective**. A valid placement must eventually ensure no blocks overlap, but we will judge solutions by how effectively you reduce overlap and, secondarily, how well you handle wirelength.
+This fork contains a complete solution for the VLSI cell placement challenge.
 
-The deadline is when all intern slots for summer 2026 are filled. We will review submissions on a rolling basis.
+## Result
 
-## Problem Statement
+Measured on the first 10 benchmark cases with `python3 test.py`:
 
-- **Objective:** Place a set of standard cells and macros on a chip layout to **minimize overlap (most important)** and wirelength (secondary).  
-  - Overlap will be measured as `num overlapping cells / num total cells`, though you are encouraged to define and implement your own overlap loss function if you think it’s better.  
-  - Solving this problem will require designing a strong overlap loss, tuning hyperparameters, and experimenting with optimizers. Creativity is encouraged — nothing is off the table.  
-- **Input:** Randomly generated netlists.  
-- **Output:** Average normalized **overlap (primary metric)** and wirelength (secondary metric) across a set of randomized placements.  
+| Name | Average Overlap | Average Wirelength | Total Runtime | Notes |
+|------|-----------------|--------------------|---------------|-------|
+| Omar Ramadan | 0.0000 | 0.2511 | 799.82s | Full-pipeline legal placement portfolio; runtime not optimized |
 
-## Submission Instructions
+Exact local run:
 
-1. **Fork this repository.**
-2. Solve the placement problem using your preferred tools or scripts.  
-3. Run the first 10 tests to evaluate your solution and obtain the overlap and wirelength metrics. Report Average Overlap, Wirelength and total Runtime. *Test cases 11 and 12 are extra credit, give them a shot if you have some time.*  
-5. Submit a pull request with your updated leaderboard entry and instructions for me to access your actual submission (it's fine if it's public).
+```text
+AVERAGE_OVERLAP=0.000000
+AVERAGE_WIRELENGTH=0.251088
+TOTAL_REPORTED_RUNTIME=799.82s
+```
 
-Note: You can use any libraries or frameworks you like, but please ensure that your code is well-documented and easy to follow.  
+## How To Run
 
-Also, if you think there are any bugs in the provided code, feel free to fix them and mention the changes in your submission.  
+Install dependencies:
 
-You may submit multiple solutions to try and increase your score.
+```bash
+pip install torch numpy scipy matplotlib
+```
 
-We will review submissions on a rolling basis.
+Run the required first 10 tests:
 
-## Leaderboard (sorted by overlap)
+```bash
+python3 test.py
+```
 
-| Rank | Name            | Overlap     | Wirelength (um) | Runtime (s) | Notes                |
-|------|-----------------|-------------|-----------------|-------------|----------------------|
-| 1    | Brayden Rudisill  | 0.0000    | 0.2611          |   50.51     |   Timed on a mac air |
-| 2    | manuhalapeth      | 0.0000    | 0.2630          |  196.8      |                      |
-| 3    | Neil Teje         | 0.0000    | 0.2700          | 24.00s      |                      |
-| 4    | Leison Gao      | 0.0000      | 0.2796          | 50.14s      |                      |
-| 5    | William Pan     | 0.0000      | 0.2848          | 155.33s     |                      |
-| 6    | Ashmit Dutta    | 0.0000      | 0.2870          | 995.58      |  Spent my entire morning (12 am - 6 am) doing this :P       |
-| 7    | Pawan Paleja     | 0.0000      | 0.3311         | 1.74s     |   Implemented hint for loss func, cosine annealing on learning rate with warmup, std annealing on lambda weight. Used optuna to tune hyperparam. Tested on gh codespaces 2-core.                   |
- 8   | Shashank Shriram  | 0.0000     | 0.3312          |  11.32      |   🏎️💥               |
-| 9    | Gabriel Del Monte  | 0.0000      | 0.3427          | 606.07      |                                                              |
-| 10    | Aleksey  Valouev| 0.0000      | 0.3577          | 118.98      |                      |        
-| 11   | Mohul Shukla    | 0.0000      | 0.5048          | 54.60s      |                      |
-| 12    | Ryan Hulke      | 0.0000      | 0.5226          | 166.24      |                      |
-| 13    | Neel  Shah      | 0.0000      | 0.5445          | 45.40       |  Zero overlaps on all tests, adaptive schedule + early stop |
-| 14   | Nawel Asgar    | 0.0000     | 0.5675          | 81.49      | Adaptive penalty scaling with cubic gradients and design-size optimization
-| 15   | Shiva Baghel     | 0.0000     | 0.5885          | 491.00      | Stable zero-overlap with balanced optimization      |
-| 16   | Vansh Jain      | 0.0000      | 0.9352          | 86.36       |                      |
-| 17    | Akash Pai       | 0.0006      | 0.4933          | 326.25s     |                      |
-| 18    | Zade Mahayni     | 0.00665     | 0.5157          |  127.4     | Will try again tomorrow |
-| 19    | Nithin Yanna    | 0.0148      | 0.5034          | 247.30s     | aggressive overlap penalty with quadratic scaling |
-| 20    | Sean Ko         | 0.0271      |  .5138          | 31.83s      | lr increase, decrease epoch, increase lambda overlap and decreased lambda wire_length + log penalty loss |
-| 21    | Keya Gohil    | 0.0155      | 0.4678         | 1513.07     | Still working |
-| 22    | Prithvi Seran   | 0.0499      | 0.4890          | 398.58      |                      |
-| 23    | partcl example  | 0.8         | 0.4             | 5           | example              |
-| 24    | Add Yours!      |             |                 |             |                      |
+Extra-credit cases 11 and 12 are kept in `EXTRA_CREDIT_TEST_CASES` inside
+`test.py`, but they are not run by default because the challenge submission asks
+for the first 10 benchmark cases.
 
-> **To add your results:**  
-> Insert a new row in the table above with your name, overlap, wirelength, and any notes. Ensure you sort by overlap.
+## Implementation Notes
 
-Good luck!
+The public challenge API remains in root-level `placement.py`, so the provided
+`test.py` can still import the expected functions. The implementation lives in
+the `solver/` package, split by algorithm stage:
+
+1. `solver/core/`
+   - Challenge constants and tensor feature indices
+   - Synthetic netlist generation
+   - Wirelength and differentiable overlap losses
+   - Exact overlap and normalized leaderboard metrics
+
+2. `solver/gradient/`
+   - Main differentiable optimizer
+   - Momentum SGD placement with overlap pressure
+   - Short post-legalization wirelength descent
+
+3. `solver/local_search/`
+   - Legal single-cell projections
+   - Same-size assignment refinement
+   - Pairwise swaps that preserve legality
+   - Shared local wirelength helpers
+
+4. `solver/unlock/`
+   - Temporary-overlap window optimization
+   - Window removal and greedy legal reinsertion
+   - Used to escape legal local minima where cells cannot pass through each
+     other with purely legal moves
+
+5. `solver/macro/`
+   - `layouts.py`: macro contact-layout generation and topology populations
+   - `relegalize.py`: macro port-aware standard-cell reinsertion
+   - `search.py`: global macro topology and continuous macro-coordinate search
+
+6. `solver/pipeline/`
+   - Size-aware candidate portfolio
+   - Full-pipeline selection: every candidate is trained, legalized, refined,
+     and only then compared by the official metrics
+
+7. `placement.py`
+   - Thin compatibility wrapper exposing the expected challenge functions
+   - Small demo `main()` for manual visualization runs
+
+The solver keeps overlap as the hard priority and then improves wirelength with
+a legal full-pipeline portfolio:
+
+- differentiable overlap repulsion for the main optimizer
+- KD-tree overlap candidate pruning for large cases
+- legal post-placement cleanup using assignment and pairwise swaps
+- overlap-tolerant local unlock/refinement windows
+- macro-aware topology and continuous macro-coordinate refinement
+- outer portfolio selection after every candidate has gone through the full
+  final refinement pipeline
+
+I also fixed the baseline placeholder overlap loss and kept the public metric
+calculation shared between training-time selection and final evaluation.

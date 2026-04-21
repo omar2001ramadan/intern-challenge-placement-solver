@@ -45,7 +45,9 @@ TEST_CASES = [
     (8, 7, 150, 1008),
     (9, 8, 200, 1009),
     (10, 10, 2000, 1010),
-    # Realistic designs
+]
+
+EXTRA_CREDIT_TEST_CASES = [
     (11, 10, 10000, 1011),
     (12, 10, 100000, 1012),
 ]
@@ -119,7 +121,7 @@ def run_placement_test(
     }
 
 
-def run_all_tests():
+def run_all_tests(test_cases=TEST_CASES):
     """Run all test cases and compute aggregate metrics.
 
     Uses default hyperparameters from train_placement() function.
@@ -130,20 +132,20 @@ def run_all_tests():
     print("=" * 70)
     print("PLACEMENT CHALLENGE TEST SUITE")
     print("=" * 70)
-    print(f"\nRunning {len(TEST_CASES)} test cases with various netlist sizes...")
+    print(f"\nRunning {len(test_cases)} test cases with various netlist sizes...")
     print("Using default hyperparameters from train_placement()")
     print()
 
     all_results = []
 
-    for idx, (test_id, num_macros, num_std_cells, seed) in enumerate(TEST_CASES, 1):
+    for idx, (test_id, num_macros, num_std_cells, seed) in enumerate(test_cases, 1):
         size_category = (
             "Small" if num_std_cells <= 30
             else "Medium" if num_std_cells <= 100
             else "Large"
         )
 
-        print(f"Test {idx}/{len(TEST_CASES)}: {size_category} ({num_macros} macros, {num_std_cells} std cells)")
+        print(f"Test {idx}/{len(test_cases)}: {size_category} ({num_macros} macros, {num_std_cells} std cells)")
         print(f"  Seed: {seed}")
 
         # Run test
