@@ -8,14 +8,14 @@ Measured on the first 10 benchmark cases with `python3 test.py`:
 
 | Name | Average Overlap | Average Wirelength | Total Runtime | Notes |
 |------|-----------------|--------------------|---------------|-------|
-| Omar Ramadan | 0.0000 | 0.2511 | 799.82s | Full-pipeline legal placement portfolio; runtime not optimized |
+| Omar Ramadan | 0.0000 | 0.2507 | 858.10s | Gated local-search portfolio; runtime not optimized |
 
 Exact local run:
 
 ```text
 AVERAGE_OVERLAP=0.000000
-AVERAGE_WIRELENGTH=0.251088
-TOTAL_REPORTED_RUNTIME=799.82s
+AVERAGE_WIRELENGTH=0.250709
+TOTAL_REPORTED_RUNTIME=858.10s
 ```
 
 ## How To Run

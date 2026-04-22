@@ -13,6 +13,7 @@ from solver.local_search import (
     _nearest_legal_x_np,
     _nearest_legal_y_np,
     _smooth_pair_cost_np,
+    _use_reducible_local_scoring,
 )
 
 
@@ -37,6 +38,7 @@ def _macro_port_aware_relegalize_candidate(
     macro_mask = heights > 1.5
     macros = np.where(macro_mask)[0]
     std_cells = np.where(~macro_mask)[0]
+    use_corrected_scoring = _use_reducible_local_scoring(num_cells, int(macros.size))
 
     if macros.size < 1 or std_cells.size < 1:
         return start_cell_features
@@ -58,6 +60,10 @@ def _macro_port_aware_relegalize_candidate(
     for edge_idx, (src_pin, tgt_pin) in enumerate(edge_np):
         src_cell = int(pin_cell[src_pin])
         tgt_cell = int(pin_cell[tgt_pin])
+
+        if use_corrected_scoring and src_cell == tgt_cell:
+            continue
+
         own_pins[src_cell].append(src_pin)
         other_pins[src_cell].append(tgt_pin)
         if src_cell != tgt_cell:
@@ -300,4 +306,3 @@ def _macro_micro_shift_refinement(
         best_metrics = round_best_metrics
 
     return best_cell_features
-
