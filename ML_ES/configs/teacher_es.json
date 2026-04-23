@@ -1,0 +1,50 @@
+{
+  "seed": 42,
+  "device": "auto",
+  "resume": true,
+  "epochs": 100000,
+  "environments_per_epoch": 20,
+  "curriculum": [
+    {"num_macros": 2, "num_std_cells": 20},
+    {"num_macros": 3, "num_std_cells": 50},
+    {"num_macros": 5, "num_std_cells": 100},
+    {"num_macros": 8, "num_std_cells": 200}
+  ],
+  "model": {
+    "input_dim": 12,
+    "hidden_dim": 552,
+    "num_layers": 8,
+    "dropout": 0.1
+  },
+  "environment": {
+    "action_scale": 0.25,
+    "max_steps": 24,
+    "reward": {
+      "overlap_delta_weight": 8.0,
+      "wirelength_delta_weight": 0.0,
+      "overlap_ratio_delta_weight": 2.0,
+      "action_penalty_weight": 0.0001,
+      "zero_overlap_bonus": 5.0
+    }
+  },
+  "optimizer": {
+    "lr": 0.0003,
+    "weight_decay": 0.0,
+    "grad_clip": 1.0,
+    "scheduler": {
+      "min_lr": 3.0e-05,
+      "max_lr": 0.0008,
+      "increase_factor": 1.05,
+      "decrease_factor": 0.5,
+      "tolerance": 0.0001
+    }
+  },
+  "evolution": {
+    "sigma": 0.01,
+    "perturbation_pairs": 48
+  },
+  "log_path": "logs/teacher_es_15m.jsonl",
+  "state_path": "checkpoints/teacher_es_15m_latest.pt",
+  "best_path": "checkpoints/teacher_es_15m_best.pt",
+  "final_path": "checkpoints/teacher_es_15m_final.pt"
+}
